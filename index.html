@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>EXIS 운동 알고리즘 테스트</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                overflow: hidden;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                font-size: 1.1em;
+                opacity: 0.9;
+            }
+
+            .content {
+                padding: 40px;
+            }
+
+            /* 설문 스타일 */
+            .survey-section {
+                display: none;
+            }
+
+            .survey-section.active {
+                display: block;
+            }
+
+            .question {
+                margin-bottom: 30px;
+            }
+
+            .question h3 {
+                color: #333;
+                margin-bottom: 15px;
+                font-size: 1.3em;
+            }
+
+            .question label {
+                display: block;
+                padding: 15px;
+                background: #f8f9fa;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .question label:hover {
+                background: #e9ecef;
+                border-color: #667eea;
+            }
+
+            .question input[type="radio"]:checked + label,
+            .question input[type="checkbox"]:checked + label {
+                background: #667eea;
+                color: white;
+                border-color: #667eea;
+            }
+
+            .question input[type="radio"],
+            .question input[type="checkbox"] {
+                display: none;
+            }
+
+            .question input[type="number"],
+            .question input[type="text"] {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                font-size: 1em;
+                margin-bottom: 10px;
+            }
+
+            .input-group {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 10px;
+            }
+
+            .input-group input {
+                flex: 1;
+            }
+
+            .btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                padding: 15px 40px;
+                border-radius: 10px;
+                font-size: 1.1em;
+                cursor: pointer;
+                transition: transform 0.3s;
+                margin-top: 20px;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            /* 결과 스타일 */
+            .results-section {
+                display: none;
+            }
+
+            .results-section.active {
+                display: block;
+            }
+
+            .progress-bar-container {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+            }
+
+            .progress-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            .day-progress {
+                font-size: 1.5em;
+                font-weight: bold;
+                color: #667eea;
+            }
+
+            .week-info {
+                color: #666;
+                font-size: 1.1em;
+            }
+
+            .progress-bar {
+                height: 30px;
+                background: #e9ecef;
+                border-radius: 15px;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                transition: width 0.5s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+            }
+
+            .user-profile {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+            }
+
+            .user-profile h3 {
+                color: #667eea;
+                margin-bottom: 15px;
+            }
+
+            .profile-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .profile-item {
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .profile-item strong {
+                display: block;
+                color: #666;
+                font-size: 0.9em;
+                margin-bottom: 5px;
+            }
+
+            .profile-item span {
+                font-size: 1.2em;
+                color: #333;
+            }
+
+            .exp-bars {
+                margin: 20px 0;
+            }
+
+            .exp-bar {
+                margin-bottom: 15px;
+            }
+
+            .exp-label {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 5px;
+                font-size: 0.9em;
+            }
+
+            .exp-progress {
+                height: 20px;
+                background: #e9ecef;
+                border-radius: 10px;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .exp-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                transition: width 0.5s;
+            }
+
+            .exp-change {
+                display: inline-block;
+                margin-left: 10px;
+                font-weight: bold;
+                animation: fadeIn 0.5s;
+            }
+
+            .exp-change.positive {
+                color: #28a745;
+            }
+
+            .exp-change.negative {
+                color: #dc3545;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* 하루 운동 카드 */
+            .day-workout-card {
+                background: #f8f9fa;
+                border-radius: 15px;
+                padding: 30px;
+                margin-bottom: 20px;
+            }
+
+            .day-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 3px solid #667eea;
+            }
+
+            .day-title {
+                font-size: 1.8em;
+                font-weight: bold;
+                color: #333;
+            }
+
+            .day-type {
+                background: #667eea;
+                color: white;
+                padding: 8px 20px;
+                border-radius: 20px;
+                font-size: 1em;
+            }
+
+            .rest-day {
+                background: #28a745;
+            }
+
+            .deload-day {
+                background: #ffc107;
+            }
+
+            .rest-message {
+                text-align: center;
+                padding: 40px;
+                font-size: 1.2em;
+                color: #666;
+            }
+
+            .rest-message-icon {
+                font-size: 3em;
+                margin-bottom: 20px;
+            }
+
+            .exercise-list {
+                list-style: none;
+            }
+
+            .exercise-item {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                border-left: 5px solid #667eea;
+            }
+
+            .exercise-name {
+                font-weight: bold;
+                font-size: 1.2em;
+                color: #333;
+                margin-bottom: 8px;
+            }
+
+            .exercise-details {
+                color: #666;
+                font-size: 1em;
+                margin-bottom: 8px;
+            }
+
+            .exercise-tags {
+                margin-bottom: 15px;
+            }
+
+            .tag {
+                display: inline-block;
+                background: #e9ecef;
+                padding: 4px 10px;
+                border-radius: 5px;
+                font-size: 0.85em;
+                margin-right: 8px;
+                color: #666;
+            }
+
+            .feedback-section {
+                margin-top: 15px;
+                padding: 15px;
+                background: #fff3cd;
+                border-radius: 8px;
+            }
+
+            .feedback-title {
+                font-size: 0.95em;
+                color: #856404;
+                margin-bottom: 10px;
+                font-weight: bold;
+            }
+
+            .feedback-buttons {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .feedback-btn {
+                padding: 12px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 0.95em;
+                font-weight: bold;
+                transition: transform 0.2s;
+            }
+
+            .feedback-btn:hover {
+                transform: scale(1.05);
+            }
+
+            .feedback-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .feedback-easy {
+                background: #28a745;
+                color: white;
+            }
+
+            .feedback-good {
+                background: #17a2b8;
+                color: white;
+            }
+
+            .feedback-hard {
+                background: #ffc107;
+            }
+
+            .feedback-impossible {
+                background: #dc3545;
+                color: white;
+            }
+
+            .feedback-result {
+                margin-top: 15px;
+                padding: 15px;
+                background: #d4edda;
+                border-radius: 8px;
+                border-left: 4px solid #28a745;
+            }
+
+            .next-day-btn {
+                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                color: white;
+                border: none;
+                padding: 15px 40px;
+                border-radius: 10px;
+                font-size: 1.2em;
+                cursor: pointer;
+                width: 100%;
+                margin-top: 20px;
+                font-weight: bold;
+                transition: transform 0.3s;
+            }
+
+            .next-day-btn:hover:not(:disabled) {
+                transform: translateY(-2px);
+            }
+
+            .next-day-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .reset-btn {
+                background: #dc3545;
+                color: white;
+                border: none;
+                padding: 12px 30px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-top: 20px;
+                font-size: 1em;
+            }
+
+            .completion-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 40px;
+                border-radius: 15px;
+                text-align: center;
+            }
+
+            .completion-card h2 {
+                font-size: 2.5em;
+                margin-bottom: 20px;
+            }
+
+            .completion-card p {
+                font-size: 1.2em;
+                line-height: 1.6;
+            }
+
+            .exp-changes-summary {
+                background: white;
+                color: #333;
+                padding: 20px;
+                border-radius: 10px;
+                margin-top: 20px;
+            }
+
+            .exp-changes-summary h3 {
+                color: #667eea;
+                margin-bottom: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🏋️ EXIS 운동 알고리즘 테스트</h1>
+                <p>하루 단위 진행 및 경험치 변화 확인</p>
+            </div>
+
+            <div class="content">
+                <!-- 초기 설문 섹션 -->
+                <div class="survey-section active" id="surveySection">
+                    <h2 style="margin-bottom: 30px">초기 설문</h2>
+
+                    <!-- 질문 1: 운동 경력 -->
+                    <div class="question">
+                        <h3>1. 헬스를 시작한 지 얼마나 되었나요?</h3>
+                        <input
+                            type="radio"
+                            name="experience"
+                            id="exp1"
+                            value="초급"
+                        />
+                        <label for="exp1">🌱 초급 (6개월 미만)</label>
+
+                        <input
+                            type="radio"
+                            name="experience"
+                            id="exp2"
+                            value="중급"
+                        />
+                        <label for="exp2">💪 중급 (6개월 ~ 2년)</label>
+
+                        <input
+                            type="radio"
+                            name="experience"
+                            id="exp3"
+                            value="상급"
+                        />
+                        <label for="exp3">🔥 상급 (2년 이상)</label>
+                    </div>
+
+                    <!-- 질문 2: 주요 리프트 중량 -->
+                    <div class="question">
+                        <h3>
+                            2. 주요 리프트 최대 중량을 알려주세요 (선택사항, kg)
+                        </h3>
+                        <div class="input-group">
+                            <input
+                                type="number"
+                                id="squat"
+                                placeholder="스쿼트"
+                                min="0"
+                            />
+                            <input
+                                type="number"
+                                id="bench"
+                                placeholder="벤치프레스"
+                                min="0"
+                            />
+                            <input
+                                type="number"
+                                id="deadlift"
+                                placeholder="데드리프트"
+                                min="0"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- 질문 3: 체형 정보 -->
+                    <div class="question">
+                        <h3>3. 체형 정보를 알려주세요 (선택사항)</h3>
+                        <div class="input-group">
+                            <input
+                                type="number"
+                                id="height"
+                                placeholder="키 (cm)"
+                                min="100"
+                                max="250"
+                            />
+                            <input
+                                type="number"
+                                id="weight"
+                                placeholder="체중 (kg)"
+                                min="30"
+                                max="200"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- 질문 4: 주간 운동 빈도 -->
+                    <div class="question">
+                        <h3>4. 일주일에 평균 몇 번 운동하시나요?</h3>
+                        <input
+                            type="radio"
+                            name="frequency"
+                            id="freq1"
+                            value="3"
+                        />
+                        <label for="freq1">주 3회</label>
+
+                        <input
+                            type="radio"
+                            name="frequency"
+                            id="freq2"
+                            value="4"
+                        />
+                        <label for="freq2">주 4회</label>
+
+                        <input
+                            type="radio"
+                            name="frequency"
+                            id="freq3"
+                            value="5"
+                        />
+                        <label for="freq3">주 5회</label>
+
+                        <input
+                            type="radio"
+                            name="frequency"
+                            id="freq4"
+                            value="6"
+                        />
+                        <label for="freq4">주 6회</label>
+                    </div>
+
+                    <!-- 질문 5: 운동 환경 -->
+                    <div class="question">
+                        <h3>5. 어떤 환경에서 운동하고 계신가요?</h3>
+                        <input
+                            type="radio"
+                            name="environment"
+                            id="env1"
+                            value="맨몸"
+                        />
+                        <label for="env1">🤸 맨몸 운동</label>
+
+                        <input
+                            type="radio"
+                            name="environment"
+                            id="env2"
+                            value="헬스장"
+                        />
+                        <label for="env2">🏋️ 헬스장</label>
+
+                        <input
+                            type="radio"
+                            name="environment"
+                            id="env3"
+                            value="소도구"
+                        />
+                        <label for="env3"
+                            >🎯 맨몸 + 소도구 (밴드, 덤벨 등)</label
+                        >
+                    </div>
+
+                    <!-- 질문 6: 운동 목적 -->
+                    <div class="question">
+                        <h3>6. 운동 목표는 무엇인가요?</h3>
+                        <input
+                            type="radio"
+                            name="goal"
+                            id="goal1"
+                            value="다이어트"
+                        />
+                        <label for="goal1">🔥 다이어트 (체지방 감소)</label>
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            id="goal2"
+                            value="근육증가"
+                        />
+                        <label for="goal2">💪 근육 증가 (벌크업)</label>
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            id="goal3"
+                            value="수행력"
+                        />
+                        <label for="goal3">⚡ 수행력 향상 (체력, 근력)</label>
+                    </div>
+
+                    <!-- 질문 7: 집중 부위 -->
+                    <div class="question">
+                        <h3>
+                            7. 특별히 신경 쓰고 싶은 부위가 있나요? (복수 선택
+                            가능)
+                        </h3>
+                        <input
+                            type="checkbox"
+                            name="focus"
+                            id="focus1"
+                            value="가슴"
+                        />
+                        <label for="focus1">가슴</label>
+
+                        <input
+                            type="checkbox"
+                            name="focus"
+                            id="focus2"
+                            value="등"
+                        />
+                        <label for="focus2">등</label>
+
+                        <input
+                            type="checkbox"
+                            name="focus"
+                            id="focus3"
+                            value="어깨"
+                        />
+                        <label for="focus3">어깨</label>
+
+                        <input
+                            type="checkbox"
+                            name="focus"
+                            id="focus4"
+                            value="팔"
+                        />
+                        <label for="focus4">팔</label>
+
+                        <input
+                            type="checkbox"
+                            name="focus"
+                            id="focus5"
+                            value="복부"
+                        />
+                        <label for="focus5">복부</label>
+
+                        <input
+                            type="checkbox"
+                            name="focus"
+                            id="focus6"
+                            value="하체"
+                        />
+                        <label for="focus6">하체</label>
+
+                        <input
+                            type="checkbox"
+                            name="focus"
+                            id="focus7"
+                            value="없음"
+                        />
+                        <label for="focus7">골고루 운동하고 싶어요</label>
+                    </div>
+
+                    <button class="btn" onclick="startProgram()">
+                        프로그램 시작하기
+                    </button>
+                </div>
+
+                <!-- 결과 섹션 -->
+                <div class="results-section" id="resultsSection">
+                    <div class="progress-bar-container">
+                        <div class="progress-info">
+                            <div class="day-progress" id="dayProgress">
+                                Day 1 / 28
+                            </div>
+                            <div class="week-info" id="weekInfo">1주차</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div
+                                class="progress-fill"
+                                id="progressFill"
+                                style="width: 0%"
+                            >
+                                0%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-profile" id="userProfile"></div>
+
+                    <div id="dayWorkoutContainer"></div>
+
+                    <button class="reset-btn" onclick="resetProgram()">
+                        처음으로 돌아가기
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 운동 데이터베이스
+            const exerciseDatabase = [
+                {
+                    name: "푸쉬업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "어깨", "팔", "코어"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "베어 푸쉬업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "어깨", "팔", "코어"],
+                    levels: ["초급"],
+                },
+                {
+                    name: "닐링 푸쉬업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "어깨", "팔", "코어"],
+                    levels: ["초급"],
+                },
+                {
+                    name: "파이크 푸쉬업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "등", "팔", "코어"],
+                    levels: ["중급", "상급"],
+                },
+                {
+                    name: "푸쉬업 로우",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "등", "팔", "코어"],
+                    levels: ["중급", "상급"],
+                },
+                {
+                    name: "닐링 푸쉬업 로우",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "등", "팔", "코어"],
+                    levels: ["초급"],
+                },
+                {
+                    name: "디클라인 푸쉬업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "어깨", "팔", "코어"],
+                    levels: ["중급", "상급"],
+                },
+                {
+                    name: "닐링 디클라인 푸쉬업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "어깨", "팔", "코어"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "아처 푸쉬업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["가슴", "어깨", "팔", "코어"],
+                    levels: ["상급"],
+                },
+                {
+                    name: "플랭크",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "닐링 플랭크",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["초급"],
+                },
+                {
+                    name: "사이드 플랭크",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "베이비 플랭크",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "베어 플랭크",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["중급", "상급"],
+                },
+                {
+                    name: "싯업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["중급", "상급"],
+                },
+                {
+                    name: "레그 레이즈",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "크런치",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "V-업",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어", "복부"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "데드버그",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["코어"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "스쿼트",
+                    environment: ["맨몸", "소도구", "헬스장"],
+                    bodyParts: ["하체"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "오버헤드 스쿼트",
+                    environment: ["맨몸", "소도구", "헬스장"],
+                    bodyParts: ["하체"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "스플릿 스쿼트",
+                    environment: ["맨몸", "소도구", "헬스장"],
+                    bodyParts: ["하체"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "피스톨 스쿼트",
+                    environment: ["맨몸", "소도구"],
+                    bodyParts: ["하체", "코어"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "런지 트위스트",
+                    environment: ["맨몸", "소도구", "헬스장"],
+                    bodyParts: ["하체", "코어"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "런지",
+                    environment: ["맨몸", "소도구", "헬스장"],
+                    bodyParts: ["하체"],
+                    levels: ["초급", "중급", "상급"],
+                },
+                {
+                    name: "리어 런지",
+                    environment: ["맨몸", "소도구", "헬스장"],
+                    bodyParts: ["하체"],
+                    levels: ["초급", "중급", "상급"],
+                },
+            ];
+
+            // 사용자 데이터 및 경험치
+            let userData = {
+                experience: "",
+                lifts: { squat: 0, bench: 0, deadlift: 0 },
+                body: { height: 0, weight: 0 },
+                frequency: 0,
+                environment: "",
+                goal: "",
+                focusAreas: [],
+                bodyPartExp: {
+                    가슴: 50,
+                    등: 50,
+                    어깨: 50,
+                    팔: 50,
+                    복부: 50,
+                    하체: 50,
+                    코어: 50,
+                },
+            };
+
+            let currentDay = 1;
+            let currentWeek = 1;
+            let currentDayData = null;
+            let feedbackGiven = false;
+            let expChanges = {};
+            let recentBodyParts = []; // 최근 운동한 부위 트래킹 (최근 3일)
+
+            // 설문 데이터 수집 및 프로그램 시작
+            function startProgram() {
+                // 필수 질문 체크
+                const experience = document.querySelector(
+                    'input[name="experience"]:checked'
+                );
+                const frequency = document.querySelector(
+                    'input[name="frequency"]:checked'
+                );
+                const environment = document.querySelector(
+                    'input[name="environment"]:checked'
+                );
+                const goal = document.querySelector(
+                    'input[name="goal"]:checked'
+                );
+
+                if (!experience || !frequency || !environment || !goal) {
+                    alert("필수 질문에 모두 답변해주세요!");
+                    return;
+                }
+
+                // 데이터 수집
+                userData.experience = experience.value;
+                userData.frequency = parseInt(frequency.value);
+                userData.environment = environment.value;
+                userData.goal = goal.value;
+
+                // 선택 데이터
+                userData.lifts.squat =
+                    parseInt(document.getElementById("squat").value) || 0;
+                userData.lifts.bench =
+                    parseInt(document.getElementById("bench").value) || 0;
+                userData.lifts.deadlift =
+                    parseInt(document.getElementById("deadlift").value) || 0;
+                userData.body.height =
+                    parseInt(document.getElementById("height").value) || 0;
+                userData.body.weight =
+                    parseInt(document.getElementById("weight").value) || 0;
+
+                // 집중 부위
+                const focusCheckboxes = document.querySelectorAll(
+                    'input[name="focus"]:checked'
+                );
+                userData.focusAreas = Array.from(focusCheckboxes).map(
+                    (cb) => cb.value
+                );
+
+                // 초기 경험치 설정
+                setInitialExperience();
+
+                // UI 전환
+                document
+                    .getElementById("surveySection")
+                    .classList.remove("active");
+                document
+                    .getElementById("resultsSection")
+                    .classList.add("active");
+
+                // 사용자 프로필 표시
+                displayUserProfile();
+
+                // 첫 날 표시
+                showDay(1);
+            }
+
+            // 초기 경험치 설정
+            function setInitialExperience() {
+                let baseExp = 50;
+
+                // 운동 경력에 따른 기본 경험치
+                if (userData.experience === "초급") {
+                    baseExp = 30;
+                } else if (userData.experience === "중급") {
+                    baseExp = 60;
+                } else if (userData.experience === "상급") {
+                    baseExp = 85;
+                }
+
+                // 리프트 중량 반영
+                if (
+                    userData.lifts.squat > 0 ||
+                    userData.lifts.bench > 0 ||
+                    userData.lifts.deadlift > 0
+                ) {
+                    const avgLift =
+                        (userData.lifts.squat +
+                            userData.lifts.bench +
+                            userData.lifts.deadlift) /
+                        3;
+                    if (userData.body.weight > 0) {
+                        const ratio = avgLift / userData.body.weight;
+                        if (ratio > 1.5) baseExp = Math.min(baseExp + 15, 95);
+                        else if (ratio > 1.0)
+                            baseExp = Math.min(baseExp + 10, 90);
+                    }
+                }
+
+                // 운동 빈도 반영
+                if (userData.frequency >= 5) {
+                    baseExp = Math.min(baseExp + 5, 95);
+                }
+
+                // 모든 부위에 기본 경험치 적용
+                for (let part in userData.bodyPartExp) {
+                    userData.bodyPartExp[part] = baseExp;
+                }
+
+                // 집중 부위는 약간 낮게 시작
+                if (
+                    !userData.focusAreas.includes("없음") &&
+                    userData.focusAreas.length > 0
+                ) {
+                    userData.focusAreas.forEach((area) => {
+                        if (userData.bodyPartExp[area]) {
+                            userData.bodyPartExp[area] = Math.max(
+                                baseExp - 10,
+                                20
+                            );
+                        }
+                    });
+                }
+            }
+
+            // 다음 운동 부위 선택 (실시간 경험치 반영)
+            function selectNextBodyPart() {
+                const allBodyParts = [
+                    "가슴",
+                    "등",
+                    "어깨",
+                    "팔",
+                    "복부",
+                    "하체",
+                ];
+
+                // 최근 2일 이내에 운동한 부위 제외
+                const recentParts = recentBodyParts.slice(-2);
+
+                // 사용 가능한 부위 필터링 (최근 운동하지 않은 부위)
+                let availableParts = allBodyParts.filter(
+                    (part) => !recentParts.includes(part)
+                );
+
+                // 모든 부위를 최근에 했다면 전체에서 선택
+                if (availableParts.length === 0) {
+                    availableParts = [...allBodyParts];
+                }
+
+                let selectedPart;
+
+                // 경험치 기반 가중치 확률 모델
+                if (
+                    userData.focusAreas.length > 0 &&
+                    !userData.focusAreas.includes("없음")
+                ) {
+                    // 집중 부위 중에서 경험치가 낮은 부위 우선
+                    const focusAvailable = availableParts.filter((part) =>
+                        userData.focusAreas.includes(part)
+                    );
+
+                    if (focusAvailable.length > 0 && Math.random() < 0.65) {
+                        // 65% 확률로 집중 부위
+                        // 경험치가 낮은 부위일수록 높은 확률
+                        selectedPart = selectByExpWeight(focusAvailable, true);
+                    } else {
+                        // 35% 확률로 일반 부위
+                        selectedPart = selectByExpWeight(availableParts, false);
+                    }
+                } else {
+                    // 집중 부위 없으면 골고루
+                    selectedPart = selectByExpWeight(availableParts, false);
+                }
+
+                // 하체는 일주일에 최소 1회 보장
+                const currentWeekStart = Math.floor((currentDay - 1) / 7) * 7;
+                const currentWeekParts = recentBodyParts.slice(
+                    Math.max(
+                        0,
+                        recentBodyParts.length - (currentDay - currentWeekStart)
+                    )
+                );
+
+                if (
+                    currentDay % 7 === 6 && // 주의 마지막에서 2번째 날
+                    !currentWeekParts.includes("하체") &&
+                    availableParts.includes("하체")
+                ) {
+                    selectedPart = "하체";
+                }
+
+                return selectedPart;
+            }
+
+            // 경험치 가중치 기반 부위 선택
+            function selectByExpWeight(parts, preferLowExp) {
+                if (parts.length === 0) return null;
+                if (parts.length === 1) return parts[0];
+
+                // 각 부위의 경험치 수집
+                const weights = parts.map((part) => {
+                    const exp = userData.bodyPartExp[part] || 50;
+                    // 경험치가 낮을수록 높은 가중치 (집중 훈련 필요)
+                    if (preferLowExp) {
+                        return 100 - exp + 10; // 최소 가중치 10
+                    } else {
+                        return 60; // 균등 분배
+                    }
+                });
+
+                // 가중치 기반 랜덤 선택
+                const totalWeight = weights.reduce((a, b) => a + b, 0);
+                let random = Math.random() * totalWeight;
+
+                for (let i = 0; i < parts.length; i++) {
+                    random -= weights[i];
+                    if (random <= 0) {
+                        return parts[i];
+                    }
+                }
+
+                return parts[parts.length - 1];
+            }
+
+            // 운동일인지 휴식일인지 결정
+            function isWorkoutDay() {
+                const currentWeekStart =
+                    Math.floor((currentDay - 1) / 7) * 7 + 1;
+                const dayInWeek = currentDay - currentWeekStart + 1;
+
+                // 이번 주에 이미 한 운동 횟수 계산
+                const workoutsThisWeek = recentBodyParts.slice(
+                    Math.max(0, recentBodyParts.length - (dayInWeek - 1))
+                ).length;
+
+                return workoutsThisWeek < userData.frequency;
+            }
+
+            // 하루 표시
+            function showDay(dayNumber) {
+                currentDay = dayNumber;
+                currentWeek = Math.ceil(dayNumber / 7);
+                feedbackGiven = false;
+                expChanges = {};
+
+                // 진행률 업데이트
+                updateProgress();
+
+                // 운동일인지 휴식일인지 결정
+                if (!isWorkoutDay()) {
+                    displayRestDay();
+                } else {
+                    // 실시간으로 다음 부위 선택 (경험치 반영)
+                    const selectedBodyPart = selectNextBodyPart();
+
+                    // 운동 생성
+                    const exercises = generateDayExercises(
+                        currentWeek,
+                        selectedBodyPart
+                    );
+
+                    currentDayData = {
+                        type: currentWeek === 4 ? "deload" : "workout",
+                        bodyPart: selectedBodyPart,
+                        exercises: exercises,
+                    };
+
+                    displayWorkoutDay();
+                }
+
+                // 경험치 바 업데이트
+                updateExpBars();
+            }
+
+            // 진행률 업데이트
+            function updateProgress() {
+                const progress = ((currentDay - 1) / 28) * 100;
+                document.getElementById(
+                    "dayProgress"
+                ).textContent = `Day ${currentDay} / 28`;
+                document.getElementById(
+                    "weekInfo"
+                ).textContent = `${currentWeek}주차${
+                    currentWeek === 4 ? " (Deload Week)" : ""
+                }`;
+                document.getElementById("progressFill").style.width =
+                    progress + "%";
+                document.getElementById("progressFill").textContent =
+                    Math.round(progress) + "%";
+            }
+
+            // 휴식일 표시
+            function displayRestDay() {
+                const container = document.getElementById(
+                    "dayWorkoutContainer"
+                );
+                container.innerHTML = `
+                <div class="day-workout-card">
+                    <div class="day-header">
+                        <div class="day-title">Day ${currentDay} - 휴식일</div>
+                        <div class="day-type rest-day">휴식</div>
+                    </div>
+                    <div class="rest-message">
+                        <div class="rest-message-icon">😴</div>
+                        <p>오늘은 몸을 회복하는 날입니다.</p>
+                        <p>충분한 휴식과 영양 섭취를 하세요!</p>
+                    </div>
+                </div>
+                <button class="next-day-btn" onclick="goToNextDay()">
+                    ${currentDay < 28 ? "다음 날로 이동 →" : "프로그램 완료!"}
+                </button>
+            `;
+            }
+
+            // 운동일 표시
+            function displayWorkoutDay() {
+                const container = document.getElementById(
+                    "dayWorkoutContainer"
+                );
+                const typeLabel =
+                    currentDayData.type === "deload" ? "회복 운동" : "운동";
+                const typeClass =
+                    currentDayData.type === "deload" ? "deload-day" : "";
+
+                let html = `
+                <div class="day-workout-card">
+                    <div class="day-header">
+                        <div class="day-title">Day ${currentDay} - ${currentDayData.bodyPart} 집중</div>
+                        <div class="day-type ${typeClass}">${typeLabel}</div>
+                    </div>
+                    <ul class="exercise-list">
+            `;
+
+                currentDayData.exercises.forEach((exercise, idx) => {
+                    html += `
+                    <li class="exercise-item">
+                        <div class="exercise-name">${idx + 1}. ${
+                        exercise.name
+                    }</div>
+                        <div class="exercise-details">${exercise.sets} 세트 × ${
+                        exercise.reps
+                    } 회</div>
+                        <div class="exercise-tags">
+                            ${exercise.bodyParts
+                                .map(
+                                    (part) => `<span class="tag">${part}</span>`
+                                )
+                                .join("")}
+                        </div>
+                        <div class="feedback-section">
+                            <div class="feedback-title">💬 이 운동의 난이도는 어땠나요?</div>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn feedback-easy" onclick="submitFeedback(${idx}, 'easy')">너무 쉬움 😊</button>
+                                <button class="feedback-btn feedback-good" onclick="submitFeedback(${idx}, 'good')">적절함 👍</button>
+                                <button class="feedback-btn feedback-hard" onclick="submitFeedback(${idx}, 'hard')">힘듦 😓</button>
+                                <button class="feedback-btn feedback-impossible" onclick="submitFeedback(${idx}, 'impossible')">불가능 😰</button>
+                            </div>
+                            <div id="feedback-result-${idx}"></div>
+                        </div>
+                    </li>
+                `;
+                });
+
+                html += `
+                    </ul>
+                </div>
+                <button class="next-day-btn" id="nextDayBtn" onclick="goToNextDay()" disabled>
+                    ${
+                        currentDay < 28
+                            ? "모든 운동에 피드백을 주면 다음 날로 이동할 수 있습니다"
+                            : "프로그램 완료!"
+                    }
+                </button>
+            `;
+
+                container.innerHTML = html;
+            }
+
+            // 하루 운동 생성 (실시간 경험치 반영)
+            function generateDayExercises(weekNumber, targetBodyPart) {
+                if (!targetBodyPart) return [];
+
+                const isDeload = weekNumber === 4;
+
+                // 부위별 현재 경험치 확인
+                const bodyPartExp = userData.bodyPartExp[targetBodyPart] || 50;
+
+                // 주차별 운동 개수 설정
+                let numExercises;
+                if (weekNumber === 1) {
+                    numExercises = 3;
+                } else if (weekNumber === 2 || weekNumber === 3) {
+                    numExercises = 4;
+                } else {
+                    numExercises = 3; // Deload
+                }
+
+                // 경험치 기반 난이도 레벨 결정
+                let targetLevels = [];
+                if (bodyPartExp < 40) {
+                    targetLevels = ["초급"];
+                } else if (bodyPartExp < 70) {
+                    targetLevels = ["초급", "중급"];
+                } else {
+                    targetLevels = ["중급", "상급"];
+                }
+
+                // 운동 필터링 (부위, 환경, 레벨)
+                const availableExercises = exerciseDatabase.filter(
+                    (ex) =>
+                        ex.bodyParts.some(
+                            (part) =>
+                                part === targetBodyPart ||
+                                part === "코어" ||
+                                (targetBodyPart.includes("복") &&
+                                    part === "복부")
+                        ) &&
+                        ex.environment.includes(userData.environment) &&
+                        ex.levels.some((level) => targetLevels.includes(level))
+                );
+
+                // 운동이 없으면 레벨 제한 완화
+                if (availableExercises.length < numExercises) {
+                    const fallbackExercises = exerciseDatabase.filter(
+                        (ex) =>
+                            ex.bodyParts.some(
+                                (part) =>
+                                    part === targetBodyPart ||
+                                    part === "코어" ||
+                                    (targetBodyPart.includes("복") &&
+                                        part === "복부")
+                            ) && ex.environment.includes(userData.environment)
+                    );
+                    availableExercises.push(...fallbackExercises);
+                }
+
+                const selectedExercises = [];
+                const exercisesCopy = [...availableExercises];
+                // 중복 제거
+                const uniqueExercises = exercisesCopy.filter(
+                    (ex, idx, self) =>
+                        idx === self.findIndex((e) => e.name === ex.name)
+                );
+
+                for (
+                    let i = 0;
+                    i < numExercises && uniqueExercises.length > 0;
+                    i++
+                ) {
+                    const randomIndex = Math.floor(
+                        Math.random() * uniqueExercises.length
+                    );
+                    const exercise = uniqueExercises[randomIndex];
+                    uniqueExercises.splice(randomIndex, 1);
+
+                    // 경험치 비율로 세트 수와 반복수 계산
+                    const sets = calculateSets(weekNumber, bodyPartExp);
+                    const reps = calculateReps(
+                        weekNumber,
+                        userData.goal,
+                        isDeload,
+                        bodyPartExp
+                    );
+
+                    selectedExercises.push({
+                        name: exercise.name,
+                        sets: sets,
+                        reps: reps,
+                        bodyParts: exercise.bodyParts,
+                        feedbackGiven: false,
+                    });
+                }
+
+                return selectedExercises;
+            }
+
+            // 세트 수 계산 (경험치 비율 반영)
+            function calculateSets(weekNumber, bodyPartExp) {
+                let minSets, maxSets;
+
+                // 주차별 세트 범위
+                if (weekNumber === 1) {
+                    minSets = 3;
+                    maxSets = 4.5;
+                } else if (weekNumber === 2 || weekNumber === 3) {
+                    minSets = 3;
+                    maxSets = 4.5;
+                } else {
+                    // Deload 주차
+                    minSets = 2.5;
+                    maxSets = 4;
+                }
+
+                // 경험치를 0-100에서 0-1 비율로 변환
+                const expRatio = bodyPartExp / 100;
+
+                // 경험치 비율로 세트 수 계산
+                const targetSets = Math.round(
+                    minSets + (maxSets - minSets) * expRatio
+                );
+
+                return Math.max(targetSets, minSets);
+            }
+
+            // 반복 횟수 계산 (경험치 비율 반영)
+            function calculateReps(weekNumber, goal, isDeload, bodyPartExp) {
+                if (isDeload) {
+                    return 10; // Deload는 고정
+                }
+
+                let minReps, maxReps;
+
+                // 목적에 따른 최소/최대 반복수 설정
+                if (goal === "다이어트") {
+                    minReps = 15;
+                    maxReps = 20;
+                } else if (goal === "근육증가") {
+                    minReps = 6;
+                    maxReps = 10;
+                } else {
+                    // 수행력
+                    minReps = 8;
+                    maxReps = 12;
+                }
+
+                // 경험치를 0-100에서 0-1 비율로 변환
+                const expRatio = bodyPartExp / 100;
+
+                // 경험치 비율로 min과 max 사이 값 계산
+                let targetReps = Math.round(
+                    minReps + (maxReps - minReps) * expRatio
+                );
+
+                // 주차별 프로그레션 (+1~2회)
+                if (weekNumber === 2) {
+                    targetReps += 1;
+                } else if (weekNumber === 3) {
+                    targetReps += 2;
+                }
+
+                // 최소값 보장
+                return Math.max(targetReps, minReps);
+            }
+
+            // 피드백 제출
+            function submitFeedback(exerciseIdx, feedbackType) {
+                const exercise = currentDayData.exercises[exerciseIdx];
+
+                if (exercise.feedbackGiven) {
+                    return;
+                }
+
+                exercise.feedbackGiven = true;
+
+                let message = "";
+                let expChange = 0;
+
+                if (feedbackType === "easy") {
+                    message =
+                        "✅ 다음에는 더 어려운 변형이나 높은 강도로 조정됩니다.";
+                    expChange = 5;
+                } else if (feedbackType === "good") {
+                    message = "✅ 현재 강도가 적절합니다. 계속 유지됩니다.";
+                    expChange = 2;
+                } else if (feedbackType === "hard") {
+                    message =
+                        "✅ 조금 힘들었네요. 강도를 약간 낮추거나 더 연습합니다.";
+                    expChange = 1;
+                } else if (feedbackType === "impossible") {
+                    message =
+                        "✅ 아직 어려운 운동이네요. 더 쉬운 변형으로 조정됩니다.";
+                    expChange = -3;
+                }
+
+                // 경험치 변화 저장
+                exercise.bodyParts.forEach((part) => {
+                    if (userData.bodyPartExp[part] !== undefined) {
+                        const oldExp = userData.bodyPartExp[part];
+                        const newExp = Math.max(
+                            0,
+                            Math.min(100, oldExp + expChange)
+                        );
+                        userData.bodyPartExp[part] = newExp;
+
+                        if (!expChanges[part]) expChanges[part] = 0;
+                        expChanges[part] += expChange;
+                    }
+                });
+
+                // 피드백 결과 표시
+                const resultDiv = document.getElementById(
+                    `feedback-result-${exerciseIdx}`
+                );
+                let expText = expChange > 0 ? `+${expChange}` : `${expChange}`;
+                let expClass = expChange >= 0 ? "positive" : "negative";
+
+                resultDiv.innerHTML = `
+                <div class="feedback-result">
+                    ${message}<br>
+                    <strong>경험치 변화: <span class="exp-change ${expClass}">${expText}</span></strong>
+                    (${exercise.bodyParts.join(", ")} 부위)
+                </div>
+            `;
+
+                // 모든 운동 피드백 버튼 비활성화
+                const buttons =
+                    resultDiv.previousElementSibling.querySelectorAll(
+                        ".feedback-btn"
+                    );
+                buttons.forEach((btn) => (btn.disabled = true));
+
+                // 경험치 바 업데이트 (프로필도 함께 업데이트)
+                displayUserProfile();
+
+                // 모든 운동에 피드백을 주었는지 확인
+                checkAllFeedbackGiven();
+            }
+
+            // 모든 피드백 확인
+            function checkAllFeedbackGiven() {
+                const allGiven = currentDayData.exercises.every(
+                    (ex) => ex.feedbackGiven
+                );
+
+                if (allGiven) {
+                    const nextBtn = document.getElementById("nextDayBtn");
+                    nextBtn.disabled = false;
+                    nextBtn.textContent =
+                        currentDay < 28
+                            ? "다음 날로 이동 →"
+                            : "프로그램 완료 확인!";
+                }
+            }
+
+            // 다음 날로 이동
+            function goToNextDay() {
+                // 운동한 부위를 히스토리에 추가
+                if (currentDayData && currentDayData.bodyPart) {
+                    recentBodyParts.push(currentDayData.bodyPart);
+
+                    // 최근 7일치만 유지 (1주일)
+                    if (recentBodyParts.length > 7) {
+                        recentBodyParts.shift();
+                    }
+                }
+
+                if (currentDay >= 28) {
+                    showCompletion();
+                } else {
+                    showDay(currentDay + 1);
+                }
+            }
+
+            // 프로그램 완료
+            function showCompletion() {
+                const container = document.getElementById(
+                    "dayWorkoutContainer"
+                );
+
+                let expSummary =
+                    '<h3>부위별 최종 경험치</h3><div class="exp-bars">';
+                for (let part in userData.bodyPartExp) {
+                    const exp = userData.bodyPartExp[part];
+                    expSummary += `
+                    <div class="exp-bar">
+                        <div class="exp-label">
+                            <span>${part}</span>
+                            <span>${exp}/100</span>
+                        </div>
+                        <div class="exp-progress">
+                            <div class="exp-fill" style="width: ${exp}%"></div>
+                        </div>
+                    </div>
+                `;
+                }
+                expSummary += "</div>";
+
+                container.innerHTML = `
+                <div class="completion-card">
+                    <h2>🎉 28일 프로그램 완료!</h2>
+                    <p>축하합니다! 한 달간의 여정을 완주하셨습니다.</p>
+                    <p>피드백 기반으로 경험치가 조정되었습니다.</p>
+                    <div class="exp-changes-summary">
+                        ${expSummary}
+                    </div>
+                </div>
+            `;
+            }
+
+            // 사용자 프로필 표시
+            function displayUserProfile() {
+                const profileDiv = document.getElementById("userProfile");
+
+                let html = "<h3>📊 사용자 프로필 및 부위별 경험치</h3>";
+                html += '<div class="profile-grid">';
+                html += `<div class="profile-item"><strong>경험 레벨</strong><span>${userData.experience}</span></div>`;
+                html += `<div class="profile-item"><strong>운동 빈도</strong><span>주 ${userData.frequency}회</span></div>`;
+                html += `<div class="profile-item"><strong>운동 환경</strong><span>${userData.environment}</span></div>`;
+                html += `<div class="profile-item"><strong>운동 목표</strong><span>${userData.goal}</span></div>`;
+
+                if (userData.body.height > 0 && userData.body.weight > 0) {
+                    const bmi = (
+                        userData.body.weight /
+                        Math.pow(userData.body.height / 100, 2)
+                    ).toFixed(1);
+                    html += `<div class="profile-item"><strong>체형</strong><span>${userData.body.height}cm / ${userData.body.weight}kg</span></div>`;
+                }
+
+                if (
+                    userData.focusAreas.length > 0 &&
+                    !userData.focusAreas.includes("없음")
+                ) {
+                    html += `<div class="profile-item"><strong>집중 부위</strong><span>${userData.focusAreas.join(
+                        ", "
+                    )}</span></div>`;
+                }
+
+                html += "</div>";
+
+                // 최근 운동 부위 히스토리 표시
+                if (recentBodyParts.length > 0) {
+                    html +=
+                        '<div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">';
+                    html +=
+                        '<strong style="color: #667eea;">📝 최근 운동 부위 히스토리</strong>';
+                    html +=
+                        '<div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">';
+                    recentBodyParts.forEach((part, idx) => {
+                        html += `<span class="tag" style="background: #667eea; color: white;">Day ${
+                            currentDay - recentBodyParts.length + idx + 1
+                        }: ${part}</span>`;
+                    });
+                    html += "</div></div>";
+                }
+
+                html += '<div class="exp-bars" id="expBarsContainer"></div>';
+
+                profileDiv.innerHTML = html;
+                updateExpBars();
+            }
+
+            // 경험치 바 업데이트
+            function updateExpBars() {
+                const container = document.getElementById("expBarsContainer");
+                if (!container) return;
+
+                let html = "";
+                for (let part in userData.bodyPartExp) {
+                    const exp = userData.bodyPartExp[part];
+                    const change = expChanges[part] || 0;
+                    const changeText =
+                        change > 0
+                            ? `+${change}`
+                            : change < 0
+                            ? `${change}`
+                            : "";
+                    const changeClass =
+                        change > 0 ? "positive" : change < 0 ? "negative" : "";
+
+                    html += `
+                    <div class="exp-bar">
+                        <div class="exp-label">
+                            <span>${part}</span>
+                            <span>
+                                ${exp}/100
+                                ${
+                                    changeText
+                                        ? `<span class="exp-change ${changeClass}">${changeText}</span>`
+                                        : ""
+                                }
+                            </span>
+                        </div>
+                        <div class="exp-progress">
+                            <div class="exp-fill" id="exp-fill-${part}" style="width: ${exp}%"></div>
+                        </div>
+                    </div>
+                `;
+                }
+                container.innerHTML = html;
+            }
+
+            // 프로그램 리셋
+            function resetProgram() {
+                if (
+                    !confirm(
+                        "정말 처음으로 돌아가시겠습니까? 모든 진행 상황이 초기화됩니다."
+                    )
+                ) {
+                    return;
+                }
+
+                document
+                    .getElementById("resultsSection")
+                    .classList.remove("active");
+                document
+                    .getElementById("surveySection")
+                    .classList.add("active");
+
+                // 폼 리셋
+                document
+                    .querySelectorAll('input[type="radio"]')
+                    .forEach((input) => (input.checked = false));
+                document
+                    .querySelectorAll('input[type="checkbox"]')
+                    .forEach((input) => (input.checked = false));
+                document
+                    .querySelectorAll('input[type="number"]')
+                    .forEach((input) => (input.value = ""));
+
+                // 데이터 리셋
+                userData = {
+                    experience: "",
+                    lifts: { squat: 0, bench: 0, deadlift: 0 },
+                    body: { height: 0, weight: 0 },
+                    frequency: 0,
+                    environment: "",
+                    goal: "",
+                    focusAreas: [],
+                    bodyPartExp: {
+                        가슴: 50,
+                        등: 50,
+                        어깨: 50,
+                        팔: 50,
+                        복부: 50,
+                        하체: 50,
+                        코어: 50,
+                    },
+                };
+                currentDay = 1;
+                currentWeek = 1;
+                recentBodyParts = [];
+                currentDayData = null;
+                feedbackGiven = false;
+                expChanges = {};
+            }
+        </script>
+    </body>
+</html>
