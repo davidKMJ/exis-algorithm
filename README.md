@@ -2,13 +2,13 @@
 ![Static Badge](https://img.shields.io/badge/status-in_progress-orange?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/type-side_project-blue?style=for-the-badge)
 
-A static web application for testing EXIS's algorithm that generates personalized workout plans based on user input and real-time experience point adjustments.
+An AI agent system for EXIS that generates personalized workout plans based on user input. The system consists of three specialized AI agents: a consultant that collects workout profiles, a planner that generates daily workout plans, and a professional trainer that answers fitness-related questions.
 
 ## How to Start
 
 ### Environment
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- No dependencies or package manager required
+- Python 3.13 or higher
+- OpenAI API key (set in `.env` file)
 
 ### Quick Start
 
@@ -17,15 +17,29 @@ A static web application for testing EXIS's algorithm that generates personalize
 git clone <repo-url>
 cd exis-algorithm
 
-# Open in browser
-open index.html
-# Or simply double-click index.html
+# Install dependencies (using uv)
+uv sync
+
+# Set up environment variables
+# Create a .env file with your OpenAI API key:
+# OPENAI_API_KEY=your_api_key_here
+
+# Run the FastAPI server
+uv run python main.py
+# Or using uvicorn directly:
+uv run uvicorn main:app --reload
 ```
+
+The API will be available at `http://localhost:8000`. API documentation is available at `http://localhost:8000/docs`.
 
 ## Project Structure
 ```
 exis-algorithm/
-├── index.html              # Single-page application with embedded CSS and JavaScript
+├── main.py                 # FastAPI application with three agent endpoints
+├── consultant.py           # AI agent for collecting workout profiles
+├── planner.py              # AI agent for generating workout plans
+├── professional.py         # AI agent for answering fitness questions
+├── pyproject.toml          # Project dependencies and configuration
+├── langgraph.json          # LangGraph configuration
 └── README.md               # Project documentation
 ```
-

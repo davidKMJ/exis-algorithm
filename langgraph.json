@@ -1,0 +1,7 @@
+{
+    "dependencies": ["langchain_openai", "./initial_trainer.py"],
+    "env": "./.env",
+    "graphs": {
+        "initial_trainer": "./initial_trainer.py:graph"
+    }
+}
