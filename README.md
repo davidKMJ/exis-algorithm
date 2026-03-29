@@ -14,7 +14,7 @@ An AI agent system for EXIS that generates personalized workout plans based on u
 
 ```bash
 # Clone the repository
-git clone <repo-url>
+git clone https://github.com/davidKMJ/exis-algorithm.git
 cd exis-algorithm
 
 # Install dependencies (using uv)
